@@ -68,4 +68,21 @@ export const notesRouter = createRouter()
         deleted: id,
       };
     },
+  })
+  .mutation("toggleStar", {
+    input: z.object({
+      id: z.string(),
+      val: z.boolean(),
+    }),
+    async resolve({ ctx, input }) {
+      const { id, val } = input;
+      await ctx.prisma.note.update({
+        where: {
+          id: id,
+        },
+        data: {
+          isSpecial: val,
+        },
+      });
+    },
   });

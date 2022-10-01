@@ -3,6 +3,9 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { Note } from "@prisma/client";
+import { Icon } from "@iconify/react";
+
+import NoteOverview from "../components/NoteOverview.component";
 
 const Home: NextPage = () => {
   const [noteData, setNoteData] = useState<{
@@ -27,22 +30,6 @@ const Home: NextPage = () => {
       });
     },
   });
-
-  const { mutate: deleteMutation } = trpc.useMutation(["notes.deleteOne"], {
-    onError: (err) => {
-      console.log(err);
-    },
-    onSuccess: (data) => {
-      console.log(data, "Delete resposne here");
-      const newNotes = myNotes.filter((n:Note) => n.id != data.deleted);
-      setMyNotes([...newNotes]);
-    },
-  });
-
-  const handleDeleteClick = (id: string) => {
-    console.log(id, "oooo");
-    deleteMutation({ id });
-  };
 
   const handleChange = (
     e:
@@ -106,18 +93,11 @@ const Home: NextPage = () => {
         <div className="mt-5 flex w-full flex-wrap gap-8">
           {myNotes?.length > 0 &&
             myNotes?.map((note: Note) => (
-              <div className="transitiona-all w-56  p-4 shadow-lg transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-xl">
-                <div className="text-2xl font-bold">{note.title}</div>
-                <div>{note.description}</div>
-                <button
-                  className="mt-5 rounded-md border-2 border-red-500 px-4 py-0.5 text-sm text-red-500 transition-all duration-100 ease-out hover:bg-red-500 hover:text-white"
-                  onClick={() => {
-                    handleDeleteClick(note.id);
-                  }}
-                >
-                  DELETE
-                </button>
-              </div>
+              <NoteOverview
+                note={note}
+                myNotes={myNotes}
+                setMyNotes={setMyNotes}
+              />
             ))}
         </div>
 
